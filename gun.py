@@ -26,6 +26,9 @@ TANK_SIZE = 49
 CAT = [pygame.image.load(f"cat/{i}.png") for i in range(1, 25)]
 CAT_SIZE = 128
 
+def between(a, x, b):
+    return max(a, min(x, b))
+
 class Ball:
     def __init__(self, screen: pygame.Surface, x=40, y=450):
         """ Конструктор класса ball
@@ -41,7 +44,7 @@ class Ball:
         self.vx = 0
         self.vy = 0
         self.color = choice(GAME_COLORS)
-        self.live = 30
+        self.live = 120
 
     def move(self):
         """Переместить мяч по прошествии единицы времени.
@@ -50,11 +53,22 @@ class Ball:
         self.x и self.y с учетом скоростей self.vx и self.vy, силы гравитации, действующей на мяч,
         и стен по краям окна (размер окна 800х600).
         """
-        # FIXME
-        self.x += self.vx
-        self.y -= self.vy
+        if self.live <= 0:
+            return
+        edge_x = 800 - self.r * 2
+        edge_y = 600 - self.r * 2
+        self.x = between(0, self.x + self.vx, edge_x)
+        self.y = between(0, self.y - self.vy, edge_y)
+        self.vy -= 1
+        if self.x <= 0 or self.x >= edge_x:
+            self.vx = -self.vx - 5
+        if self.y <= 0 or self.y  >= edge_y:
+            self.vy = -self.vy - 5
+        self.live -= 1
 
     def draw(self):
+        if self.live <= 0:
+            return
         pygame.draw.circle(
             self.screen,
             self.color,
@@ -70,8 +84,10 @@ class Ball:
         Returns:
             Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
         """
-        # FIXME
-        return False
+        return self.x > obj.x \
+            and self.y > obj.y \
+            and self.x < obj.x + obj.r \
+            and self.y < obj.y + obj.r
 
 
 class Gun:
@@ -143,28 +159,32 @@ class Gun:
 class Target:
     def __init__(self, screen):
         self.screen = screen
-        self.health = 1
+        self.live = 1
         self.tick = 0
         self.finished = False
         self.new_target()
 
     def new_target(self):
         """ Инициализация новой цели. """
-        self.x = rnd(500, 600)
-        self.y = rnd(250, 500)
+        self.tick = 0
+        self.live = 1
         self.r = rnd(48, 128)
+        self.x = rnd(200, 800 - self.r)
+        self.y = rnd(100, 600 - self.r)
         self.finished = False
 
     def hit(self, points=1):
         """Попадание шарика в цель."""
-        self.health -= points
+        self.live -= points
         self.tick = 0
 
     def draw(self):
-        if self.health > 0:
+        if self.finished:
+            return
+        if self.live > 0:
             frame = (self.tick // 10) % 7
         else:
-            frame = min(len(CAT) - 1, self.tick // 4)
+            frame = min(len(CAT) - 1, self.tick // 2)
             if frame == len(CAT) - 1:
                 self.finished = True
         image = pygame.transform.scale(CAT[frame], (self.r, self.r))
@@ -175,17 +195,19 @@ class Target:
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 bullet = 0
+score = 0
 balls = []
 
 clock = pygame.time.Clock()
 gun = Gun(screen)
-target = Target(screen)
+targets = [Target(screen) for i in range(4)]
 finished = False
 
 while not finished:
     screen.fill(WHITE)
     gun.draw()
-    target.draw()
+    for t in targets:
+        t.draw()
     for b in balls:
         b.draw()
     pygame.display.update()
@@ -201,12 +223,20 @@ while not finished:
         elif event.type == pygame.MOUSEMOTION:
             gun.targetting(event)
 
+    for target in targets:
+        if target.finished:
+            target.new_target()
+
     for b in balls:
         b.move()
-        if b.hittest(target) and target.live:
-            target.live = 0
-            target.hit()
-            target.new_target()
+        if b.live <= 0:
+            balls.remove(b)
+        for target in targets:
+            if b.hittest(target) and target.live:
+                target.live = 0
+                b.live = 0
+                target.hit()
+                score += 1
     gun.power_up()
 
 pygame.quit()
