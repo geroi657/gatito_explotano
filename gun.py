@@ -61,9 +61,9 @@ class Ball:
         self.y = between(0, self.y - self.vy, edge_y)
         self.vy -= 1
         if self.x <= 0 or self.x >= edge_x:
-            self.vx = -self.vx - 5
+            self.vx = -self.vx - 10
         if self.y <= 0 or self.y  >= edge_y:
-            self.vy = -self.vy - 5
+            self.vy = -self.vy - 10
         self.live -= 1
 
     def draw(self):
@@ -192,19 +192,47 @@ class Target:
         self.tick += 1
 
 
+class TextViewer:
+    def __init__(self, screen):
+        self.screen = screen
+        self.font = pygame.font.SysFont('Comic Sans MS', 30)
+        self.font2 = pygame.font.SysFont('Comic Sans MS', 20)
+
+        self.score = 0
+        self.score_info = self.font.render(f'Счёт: {self.score}', False, (0,0,0))
+        self.hit_info = None
+        self.tick = 0
+
+    def on_hit(self, bullet):
+        self.score += 1
+        self.score_info = self.font.render(f'Счёт: {self.score}', False, (0,0,0))
+
+        self.hit_info = self.font2.render(f"Вы попали, потратив {bullet} ракет!", False, (255, 255, 0))
+        self.tick = 60
+
+    def draw(self):
+        self.screen.blit(self.score_info, (20, 20))
+        if self.tick > 0:
+            self.screen.blit(self.hit_info, (20, 60))
+            self.tick -= 1
+
+
 pygame.init()
+pygame.font.init()
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 bullet = 0
-score = 0
 balls = []
 
 clock = pygame.time.Clock()
+text_view = TextViewer(screen)
 gun = Gun(screen)
 targets = [Target(screen) for i in range(4)]
 finished = False
 
 while not finished:
     screen.fill(WHITE)
+    text_view.draw()
     gun.draw()
     for t in targets:
         t.draw()
@@ -232,11 +260,13 @@ while not finished:
         if b.live <= 0:
             balls.remove(b)
         for target in targets:
-            if b.hittest(target) and target.live:
+            if target.live > 0 and b.hittest(target):
                 target.live = 0
                 b.live = 0
                 target.hit()
-                score += 1
+                text_view.on_hit(bullet)
+                bullet = 0
+
     gun.power_up()
 
 pygame.quit()
