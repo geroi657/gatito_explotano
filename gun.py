@@ -1,5 +1,5 @@
 import math
-from random import choice
+from random import choice, randint as rnd
 
 import pygame
 
@@ -20,6 +20,11 @@ GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 WIDTH = 800
 HEIGHT = 600
 
+TANK_SPRITE = pygame.image.load("tank.png")
+TANK_SIZE = 49
+
+CAT = [pygame.image.load(f"cat/{i}.png") for i in range(1, 25)]
+CAT_SIZE = 128
 
 class Ball:
     def __init__(self, screen: pygame.Surface, x=40, y=450):
@@ -66,7 +71,7 @@ class Ball:
             Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
         """
         # FIXME
-            return False
+        return False
 
 
 class Gun:
@@ -74,6 +79,9 @@ class Gun:
         self.screen = screen
         self.f2_power = 10
         self.f2_on = 0
+        self.x = 40
+        self.y = 450
+        self.rotation = 3
         self.an = 1
         self.color = GREY
 
@@ -87,8 +95,10 @@ class Gun:
         Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
         """
         global balls, bullet
+        # фу какая гадость, нас учать юзать глоб переменные что-ли
+        # поправьте если кому не лень
         bullet += 1
-        new_ball = Ball(self.screen)
+        new_ball = Ball(self.screen, self.x + TANK_SIZE / 2, self.y + TANK_SIZE / 2)
         new_ball.r += 5
         self.an = math.atan2((event.pos[1]-new_ball.y), (event.pos[0]-new_ball.x))
         new_ball.vx = self.f2_power * math.cos(self.an)
@@ -100,7 +110,7 @@ class Gun:
     def targetting(self, event):
         """Прицеливание. Зависит от положения мыши."""
         if event:
-            self.an = math.atan((event.pos[1]-450) / (event.pos[0]-20))
+            self.an = math.atan((event.pos[1]-450) / max(1, event.pos[0]-20))
         if self.f2_on:
             self.color = RED
         else:
@@ -108,35 +118,58 @@ class Gun:
 
     def draw(self):
         # FIXIT don't know how to do it
+        tank = pygame.transform.rotate(TANK_SPRITE, 90 * self.rotation)
+        self.screen.blit(tank, (self.x, self.y))
+
+        # Draw muzzle
+        w = 9 + round(self.f2_power / 30)
+        l = 50 + round(self.f2_power / 2)
+        sx = self.x + TANK_SIZE / 2 - 10
+        sy = self.y + TANK_SIZE / 2
+        ex = sx + l * math.cos(self.an)
+        ey = sy + l * math.sin(self.an)
+        pygame.draw.line(self.screen, self.color, (sx, sy), (ex, ey), w)
+        pygame.draw.circle(self.screen, self.color, (ex, ey), w / 1.5)
 
     def power_up(self):
+        self.color = GREY
         if self.f2_on:
             if self.f2_power < 100:
                 self.f2_power += 1
-            self.color = RED
-        else:
-            self.color = GREY
+            else:
+                self.color = RED
 
 
 class Target:
-    # self.points = 0
-    # self.live = 1
-    # FIXME: don't work!!! How to call this functions when object is created?
-    # self.new_target()
+    def __init__(self, screen):
+        self.screen = screen
+        self.health = 1
+        self.tick = 0
+        self.finished = False
+        self.new_target()
 
     def new_target(self):
         """ Инициализация новой цели. """
-        x = self.x = rnd(600, 780)
-        y = self.y = rnd(300, 550)
-        r = self.r = rnd(2, 50)
-        color = self.color = RED
+        self.x = rnd(500, 600)
+        self.y = rnd(250, 500)
+        self.r = rnd(48, 128)
+        self.finished = False
 
     def hit(self, points=1):
         """Попадание шарика в цель."""
-        self.points += points
+        self.health -= points
+        self.tick = 0
 
     def draw(self):
-        ...
+        if self.health > 0:
+            frame = (self.tick // 10) % 7
+        else:
+            frame = min(len(CAT) - 1, self.tick // 4)
+            if frame == len(CAT) - 1:
+                self.finished = True
+        image = pygame.transform.scale(CAT[frame], (self.r, self.r))
+        self.screen.blit(image, (self.x, self.y))
+        self.tick += 1
 
 
 pygame.init()
@@ -146,7 +179,7 @@ balls = []
 
 clock = pygame.time.Clock()
 gun = Gun(screen)
-target = Target()
+target = Target(screen)
 finished = False
 
 while not finished:
