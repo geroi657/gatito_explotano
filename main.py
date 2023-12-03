@@ -49,6 +49,7 @@ def show_shop(price):
             if event.type == pygame.QUIT:
                 return True
 
+
 def set_pause():
     pygame.mouse.set_visible(True)
 
