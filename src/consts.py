@@ -19,9 +19,9 @@ TANK_SIZE = 49
 WIDTH = 800
 HEIGHT = 600
 
-CATS = [[pygame.image.load(f"assets/cat_0/{i}.png") for i in range(1, 25)],
-        [pygame.image.load(f"assets/cat_1/{i}.png") for i in range(1, 21)],
-        [pygame.image.load(f"assets/cat_2/{i}.png") for i in range(1, 24)]]
+CAT_ANIMATIONS = [[pygame.image.load(f"assets/cat_0/{i}.png") for i in range(1, 25)],
+                 [pygame.image.load(f"assets/cat_1/{i}.png") for i in range(1, 21)],
+                 [pygame.image.load(f"assets/cat_2/{i}.png") for i in range(1, 24)]]
 
 
 CAT_SIZE = 128
