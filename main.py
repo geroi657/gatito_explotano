@@ -5,8 +5,31 @@ import pygame
 import src.consts as consts
 from src.buttons import PauseButton, Button
 from src.gun import Gun
-from src.target import Target
+from src.cats import CatFactory
 from src.text_viewer import TextViewer
+
+pygame.init()
+pygame.font.init()
+
+pause_button = PauseButton(consts.WIDTH - 60, 20, consts.STOP_BUTTON_IMAGE, 0.1)
+shop_button = Button(consts.WIDTH - 140, 20, consts.SHOP_BUTTON_IMAGE, 0.1)
+buy_button = Button(20, consts.HEIGHT / 2, consts.SHOP_BUY_BUTTON_IMAGE, 1)
+exit_button = Button(consts.WIDTH / 2 - 60, consts.HEIGHT - 90, consts.SHOP_EXIT_BUTTON_IMAGE, 1)
+# Change cursor
+cursor = pygame.transform.scale(consts.CURSOR, (70, 60))
+
+pygame.mouse.set_visible(False)
+
+screen = pygame.display.set_mode((consts.WIDTH, consts.HEIGHT))
+bullet = 0
+balls = []
+price = 100
+clock = pygame.time.Clock()
+text_view = TextViewer(screen)
+gun = Gun(screen, balls)
+targets = CatFactory(screen, gun, 4)
+finished = False
+
 
 
 def show_shop(price):
@@ -78,38 +101,27 @@ def set_pause():
                 return True
 
 
-pygame.init()
-pygame.font.init()
+def hit_target(target, ball=None):
+    if ball is not None:
+        ball.live = 0
+    target.hit()
+    gun.wallet += target.price
+    text_view.on_hit(gun.bullet, gun.wallet)
+    gun.bullet = 0
 
-print(consts.CATS)
-
-pause_button = PauseButton(consts.WIDTH - 60, 20, consts.STOP_BUTTON_IMAGE, 0.1)
-shop_button = Button(consts.WIDTH - 140, 20, consts.SHOP_BUTTON_IMAGE, 0.1)
-buy_button = Button(20, consts.HEIGHT / 2, consts.SHOP_BUY_BUTTON_IMAGE, 1)
-exit_button = Button(consts.WIDTH / 2 - 60, consts.HEIGHT - 90, consts.SHOP_EXIT_BUTTON_IMAGE, 1)
-# Change cursor
-cursor = pygame.transform.scale(consts.CURSOR, (70, 60))
-
-pygame.mouse.set_visible(False)
-
-screen = pygame.display.set_mode((consts.WIDTH, consts.HEIGHT))
-bullet = 0
-balls = []
-price = 100
-clock = pygame.time.Clock()
-text_view = TextViewer(screen)
-gun = Gun(screen, balls)
-targets = [Target(screen) for i in range(4)]
-finished = False
 
 while not finished:
     screen.fill(consts.WHITE)
     text_view.draw()
 
+    targets.draw()
     gun.draw()
 
     for t in targets:
-        t.draw()
+        if t.live > 0 and t.hittest(gun):
+            hit_target(t)
+            break
+
     for b in balls:
         b.draw()
 
@@ -135,22 +147,13 @@ while not finished:
         elif event.type == pygame.MOUSEMOTION:
             gun.targetting(event)
 
-    for target in targets:
-        if target.finished:
-            target.new_target()
-
     for b in balls:
         b.move()
         if b.live <= 0:
             balls.remove(b)
         for target in targets:
-            if target.live > 0 and b.hittest(target):
-                target.live = 0
-                b.live = 0
-                target.hit()
-                gun.wallet += target.price
-                text_view.on_hit(gun.bullet, gun.wallet)
-                gun.bullet = 0
+            if target.live > 0 and target.hittest(b):
+                hit_target(target, b)
 
     gun.power_up()
 
