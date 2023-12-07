@@ -34,7 +34,7 @@ gun = Gun(screen, balls)
 targets = CatFactory(screen, gun, 4)
 metal_pipe = MetalPipeBonus(screen, targets)
 finished = False
-
+bullet_type = "rifle"
 
 def show_shop(price):
     font = pygame.font.SysFont('Comic Sans MS', 30)
@@ -61,7 +61,7 @@ def show_shop(price):
             pygame.mouse.set_visible(False)
             return price
 
-        text_view.draw()
+        text_view.draw("Shop")
 
         if shop_button.draw(screen):
             pygame.mouse.set_visible(False)
@@ -82,7 +82,7 @@ def set_pause():
 
     while True:
         screen.fill(consts.WHITE)
-        text_view.draw()
+        text_view.draw("Shop")
         gun.draw()
 
         for t in targets:
@@ -118,7 +118,7 @@ def hit_target(target, ball=None):
 
 while not finished:
     screen.fill(consts.WHITE)
-    text_view.draw()
+    text_view.draw(bullet_type)
 
     targets.draw()
     gun.draw()
@@ -154,6 +154,15 @@ while not finished:
             gun.fire2_end(event)
         elif event.type == pygame.MOUSEMOTION:
             gun.targetting(event)
+        elif event.type == pygame.KEYDOWN:
+            if pygame.key.get_pressed()[pygame.K_1]:
+                print("riffle")
+                gun.change_bullet_type("rifle")
+                bullet_type = "rifle"
+            elif pygame.key.get_pressed()[pygame.K_2]:
+                print("shot_gun")
+                gun.change_bullet_type("shotgun")
+                bullet_type = "shotgun"
 
     for b in balls:
         if b.live <= 0:
