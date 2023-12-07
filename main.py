@@ -163,6 +163,8 @@ while not finished:
         if metal_pipe.live > 0 and metal_pipe.hittest(b):
             metal_pipe.on_collect()
             b.live = 0
+            gun.wallet += 1000
+            text_view.on_hit(gun.bullet, gun.wallet)
             continue
 
         for target in targets:
