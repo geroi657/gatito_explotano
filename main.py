@@ -101,12 +101,26 @@ def set_pause():
                 return True
 
 
+def hit_target(target, ball=None):
+    if ball is not None:
+        ball.live = 0
+    target.hit()
+    gun.wallet += target.price
+    text_view.on_hit(gun.bullet, gun.wallet)
+    gun.bullet = 0
+
+
 while not finished:
     screen.fill(consts.WHITE)
     text_view.draw()
 
-    gun.draw()
     targets.draw()
+    gun.draw()
+
+    for t in targets:
+        if t.live > 0 and t.hittest(gun):
+            hit_target(t)
+            break
 
     for b in balls:
         b.draw()
@@ -138,13 +152,8 @@ while not finished:
         if b.live <= 0:
             balls.remove(b)
         for target in targets:
-            if target.live > 0 and b.hittest(target):
-                target.live = 0
-                b.live = 0
-                target.hit()
-                gun.wallet += target.price
-                text_view.on_hit(gun.bullet, gun.wallet)
-                gun.bullet = 0
+            if target.live > 0 and target.hittest(b):
+                hit_target(target, b)
 
     gun.power_up()
 

@@ -16,6 +16,7 @@ class Gun:
         self.f2_on = 0
         self.x = 40
         self.y = 450
+        self.r = 4 # для детектора коллизий
         self.rotation = 3
         self.an = 1
         self.color = consts.GREY
@@ -71,4 +72,3 @@ class Gun:
                 self.f2_power += self.charge_speed
             else:
                 self.color = consts.RED
-

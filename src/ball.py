@@ -49,16 +49,3 @@ class Ball:
             (self.x, self.y),
             self.r
         )
-
-    def hittest(self, obj):
-        """Функция проверяет сталкивалкивается ли данный обьект с целью, описываемой в обьекте obj.
-
-        Args:
-            obj: Обьект, с которым проверяется столкновение.
-        Returns:
-            Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
-        """
-        return self.x > obj.x \
-            and self.y > obj.y \
-            and self.x < obj.x + obj.r \
-            and self.y < obj.y + obj.r

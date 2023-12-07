@@ -21,7 +21,7 @@ class GenericTarget:
 
     def hit(self, points=1):
         """Попадание шарика в цель."""
-        self.live -= points
+        self.live = 0
         self.tick = 0
 
     def move(self):
@@ -31,15 +31,16 @@ class GenericTarget:
 
         # О НЕТ ДЖОННИ ОНИ НА ДЕРЕВЬЯХ
         step = self.step
-        if self.gun.x < self.x:
+        o = round(self.r / 2)
+        if self.gun.x - o < self.x:
             self.x -= round(step / 2)
             step = round(step / 2)
-        elif self.gun.x > self.x:
+        elif self.gun.x + o > self.x:
             self.x += round(step / 2)
             step = round(step / 2)
-        if self.gun.y < self.y:
+        if self.gun.y - o < self.y:
             self.y -= step
-        elif self.gun.y > self.y:
+        elif self.gun.y + o > self.y:
             self.y += step
 
     def draw(self):
@@ -54,3 +55,16 @@ class GenericTarget:
         image = pygame.transform.scale(self.animation[frame], (self.r, self.r))
         self.screen.blit(image, (self.x, self.y))
         self.tick += 1
+
+    def hittest(self, obj):
+        """Функция проверяет сталкивалкивается ли данный обьект с пулей/объектом, описываемой в обьекте obj.
+
+        Args:
+            obj: Обьект, с которым проверяется столкновение.
+        Returns:
+            Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
+        """
+        return obj.x > self.x \
+            and obj.y > self.y \
+            and obj.x < self.x + self.r \
+            and obj.y < self.y + self.r
