@@ -7,6 +7,7 @@ from src.buttons import PauseButton, Button
 from src.gun import Gun
 from src.cats import CatFactory
 from src.text_viewer import TextViewer
+from src.metal_pipe import MetalPipeBonus
 
 pygame.init()
 pygame.font.init()
@@ -28,8 +29,8 @@ clock = pygame.time.Clock()
 text_view = TextViewer(screen)
 gun = Gun(screen, balls)
 targets = CatFactory(screen, gun, 4)
+metal_pipe = MetalPipeBonus(screen, targets)
 finished = False
-
 
 
 def show_shop(price):
@@ -116,11 +117,7 @@ while not finished:
 
     targets.draw()
     gun.draw()
-
-    for t in targets:
-        if t.live > 0 and t.hittest(gun):
-            hit_target(t)
-            break
+    metal_pipe.draw()
 
     for b in balls:
         b.draw()
@@ -137,6 +134,12 @@ while not finished:
 
     pygame.display.update()
     clock.tick(consts.FPS)
+
+    for t in targets:
+        if t.live > 0 and t.hittest(gun):
+            hit_target(t)
+            break
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
@@ -148,12 +151,19 @@ while not finished:
             gun.targetting(event)
 
     for b in balls:
-        b.move()
         if b.live <= 0:
             balls.remove(b)
+            continue
+
+        if metal_pipe.live > 0 and metal_pipe.hittest(b):
+            metal_pipe.on_collect()
+            b.live = 0
+            continue
+
         for target in targets:
             if target.live > 0 and target.hittest(b):
                 hit_target(target, b)
+        b.move()
 
     gun.power_up()
 
