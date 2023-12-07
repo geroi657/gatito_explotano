@@ -2,7 +2,7 @@ import pygame
 from pygame.mixer import Sound
 from random import randint as rnd
 
-from src.consts import BONUS_SIZE, BONUS_SPRITE, METAL_PIPE_SIZE, METAL_PIPE_SPRITE, WIDTH
+from src.consts import BONUS_SIZE, BONUS_SPRITE, METAL_PIPE_SIZE, METAL_PIPE_SPRITE, WIDTH, EXPLOTANO_SOUND
 
 class MetalPipeBonus:
     def __init__(self, screen, targets):
@@ -50,6 +50,7 @@ class MetalPipeBonus:
             Sound.play(self.sound)
             for t in self._targets:
                 t.hit()
+                Sound.play(EXPLOTANO_SOUND)
 
         if self.tick == 90:
             self._started = False

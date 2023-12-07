@@ -2,6 +2,8 @@ import math
 from random import choice, randint as rnd
 
 import pygame
+from pygame.mixer import Sound
+
 import src.consts as consts
 from src.buttons import PauseButton, Button
 from src.gun import Gun
@@ -21,10 +23,11 @@ cursor = pygame.transform.scale(consts.CURSOR, (70, 60))
 
 pygame.mouse.set_visible(False)
 
-screen = pygame.display.set_mode((consts.WIDTH, consts.HEIGHT))
 bullet = 0
 balls = []
 price = 100
+
+screen = pygame.display.set_mode((consts.WIDTH, consts.HEIGHT))
 clock = pygame.time.Clock()
 text_view = TextViewer(screen)
 gun = Gun(screen, balls)
@@ -109,6 +112,8 @@ def hit_target(target, ball=None):
     gun.wallet += target.price
     text_view.on_hit(gun.bullet, gun.wallet)
     gun.bullet = 0
+
+    Sound.play(consts.EXPLOTANO_SOUND)
 
 
 while not finished:
