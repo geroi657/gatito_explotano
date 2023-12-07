@@ -1,4 +1,7 @@
 import pygame
+from pygame.mixer import Sound, init as mixer_init
+
+mixer_init()
 
 FPS = 30
 
@@ -12,9 +15,16 @@ BLACK = (0, 0, 0)
 WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
+EXPLOTANO_SOUND = Sound("assets/explotano.ogg")
 
 TANK_SPRITE = pygame.image.load("assets/tank.png")
 TANK_SIZE = 49
+
+BONUS_SPRITE = pygame.image.load("assets/bonus.png")
+BONUS_SIZE = 64
+
+METAL_PIPE_SPRITE = pygame.image.load("assets/metal_pipe.png")
+METAL_PIPE_SIZE = 496, 240
 
 WIDTH = 800
 HEIGHT = 600
