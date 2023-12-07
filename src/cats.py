@@ -19,6 +19,12 @@ class CatFactory:
 	def __iter__(self):
 		return self._cats.__iter__()
 
+	def __len__(self):
+		return self._cats.__len__()
+
+	def increase(self):
+		self._cats.append(self._spawn_cat())
+
 	def _spawn_cat(self):
 		return choice([
 			CatOne, CatTwo, CatThree
