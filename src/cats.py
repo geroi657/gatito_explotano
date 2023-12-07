@@ -1,7 +1,7 @@
 from random import choice
 
 from src.target import GenericTarget
-from src.consts import CAT_ANIMATIONS
+from src.consts import CAT_ANIMATIONS, WIDTH, HEIGHT
 
 
 # Эта штука создаёт и обрабатывает массив котов (в голове это звучит лучше чем в тексте)
@@ -41,15 +41,47 @@ class CatFactory:
 
 # Наши существа
 class CatOne(GenericTarget):
-	animation = CAT_ANIMATIONS[0]
-	standby_frames_count = 7
+  animation = CAT_ANIMATIONS[0]
+  standby_frames_count = 7
+
+  def __init__(self, screen, gun):
+    super().__init__(screen, gun)
 
 
 class CatTwo(GenericTarget):
-	animation = CAT_ANIMATIONS[1]
-	standby_frames_count = 7
+  animation = CAT_ANIMATIONS[1]
+  standby_frames_count = 7
+
+  def __init__(self, screen, gun):
+    super().__init__(screen, gun)
+
+  def move(self):
+    pass
 
 
 class CatThree(GenericTarget):
-	animation = CAT_ANIMATIONS[2]
-	standby_frames_count = 7
+  animation = CAT_ANIMATIONS[2]
+  standby_frames_count = 7
+
+  def __init__(self, screen, gun):
+    super().__init__(screen, gun)
+
+  def move(self):
+    if self.tick % 2 != 0 or self.live < 1:
+      return
+
+    # О НЕТ ДЖОННИ ОНИ НА ДЕРЕВЬЯХ
+    step = self.step
+    o = round(self.r / 2)
+    if self.x > WIDTH - self.r or self.y > HEIGHT - self.r:
+      return
+    if self.gun.x - o < self.x:
+      self.x += round(step / 2)
+      step = round(step / 2)
+    elif self.gun.x + o > self.x:
+      self.x -= round(step / 2)
+      step = round(step / 2)
+    if self.gun.y - o < self.y:
+      self.y += step
+    elif self.gun.y + o > self.y:
+      self.y -= step
