@@ -58,7 +58,6 @@ class CatTwo(GenericTarget):
   def move(self):
     pass
 
-
 class CatThree(GenericTarget):
   animation = CAT_ANIMATIONS[2]
   standby_frames_count = 7

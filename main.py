@@ -150,6 +150,39 @@ while not finished:
         pause_button.change_image(consts.PLAY_BUTTON_IMAGE, 0.08)
         finished = set_pause()
 
+
+    key_pressed_is = pygame.key.get_pressed()
+    if key_pressed_is[pygame.K_a]:
+        gun.x -= 10
+        gun.rotation = 2
+    if key_pressed_is[pygame.K_d]:
+        gun.x += 10
+        gun.rotation = 6
+    if key_pressed_is[pygame.K_w]:
+        gun.y -= 10
+        gun.rotation = 0
+    if key_pressed_is[pygame.K_s]:
+        gun.y += 10
+        gun.rotation = 4
+
+    if key_pressed_is[pygame.K_w] and key_pressed_is[pygame.K_a]:
+        gun.x -= 7
+        gun.y -= 7
+        gun.rotation = 1
+    if key_pressed_is[pygame.K_w] and key_pressed_is[pygame.K_d]:
+        gun.x += 7
+        gun.y -= 7
+        gun.rotation = 7
+    if key_pressed_is[pygame.K_s] and key_pressed_is[pygame.K_a]:
+        gun.x -= 7
+        gun.y += 7
+        gun.rotation = 3
+    if key_pressed_is[pygame.K_s] and key_pressed_is[pygame.K_d]:
+        gun.x += 7
+        gun.y += 7
+        gun.rotation = 5
+
+
     pygame.display.update()
     clock.tick(consts.FPS)
 
@@ -180,6 +213,7 @@ while not finished:
                 print("shot_gun")
                 gun.change_bullet_type("shotgun")
                 bullet_type = "shotgun"
+
 
     for b in balls:
         if b.live <= 0:

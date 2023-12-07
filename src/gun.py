@@ -17,7 +17,7 @@ class Gun:
         self.x = 40
         self.y = 450
         self.r = 4  # для детектора коллизий
-        self.rotation = 3
+        self.rotation = 6
         self.an = 1
         self.color = consts.GREY
         self.wallet = 0
@@ -51,7 +51,7 @@ class Gun:
     def targetting(self, event):
         """Прицеливание. Зависит от положения мыши."""
         if event:
-            self.an = math.atan((event.pos[1] - 450) / max(1, event.pos[0] - 20))
+            self.an = math.atan((event.pos[1]) / max(1, event.pos[0] - 20))
         if self.f2_on:
             self.color = consts.RED
         else:
@@ -75,13 +75,13 @@ class Gun:
 
     def draw(self):
         # FIXIT don't know how to do it
-        tank = pygame.transform.rotate(consts.TANK_SPRITE, 90 * self.rotation)
+        tank = pygame.transform.rotate(consts.TANK_SPRITE, 45 * self.rotation)
         self.screen.blit(tank, (self.x, self.y))
 
         # Draw muzzle
         w = 9 + round(self.f2_power / 30)
         l = 50 + round(self.f2_power / 2)
-        sx = self.x + consts.TANK_SIZE / 2 - 10
+        sx = self.x + consts.TANK_SIZE / 2
         sy = self.y + consts.TANK_SIZE / 2
         ex = sx + l * math.cos(self.an)
         ey = sy + l * math.sin(self.an)

@@ -16,7 +16,7 @@ class GenericTarget:
         self.r = rnd(48, 128)
         self.x = rnd(400, 800 - self.r)
         self.y = rnd(100, 600 - self.r)
-        self.step = rnd(2, 4)
+        self.step = rnd(6, 10)
         self.price = 100
 
     def hit(self, points=1):
