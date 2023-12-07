@@ -28,8 +28,8 @@ class MetalPipeBonus:
         self.tick += 1
 
     def _show_bonus(self):
-        self.x = rnd(400, 700)
-        self.y = rnd(100, 600)
+        self.x = rnd(200, 700)
+        self.y = rnd(100, 500)
         self.live = 1
 
     def on_collect(self):
@@ -46,11 +46,12 @@ class MetalPipeBonus:
         y = 3 * min(self.tick, 60)
         self._screen.blit(METAL_PIPE_SPRITE, (x, y))
 
-        if self.tick == 60:
-            Sound.play(self.sound)
+        if self.tick == 50:
             for t in self._targets:
                 t.hit()
-                Sound.play(EXPLOTANO_SOUND)
+
+        if self.tick == 60:
+            Sound.play(self.sound)
 
         if self.tick == 90:
             self._started = False
