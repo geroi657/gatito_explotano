@@ -46,6 +46,6 @@ class Ball:
         pygame.draw.circle(
             self.screen,
             self.color,
-            (self.x, self.y),
-            self.r
+            (round(self.x), round(self.y)),
+            round(self.r)
         )

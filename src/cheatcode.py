@@ -4,7 +4,7 @@ class CheatCodeHandler:
 	def __init__(self):
 		self.codes = [
 			[],
-			[K_UP, K_DOWN, K_UP, K_DOWN, K_LEFT, K_RIGHT, K_LEFT, K_RIGHT, K_b, K_a, K_RETURN]
+			[K_UP, K_UP, K_DOWN, K_DOWN, K_LEFT, K_RIGHT, K_LEFT, K_RIGHT, K_b, K_a, K_RETURN]
 		]
 		self.counts = [0 for _ in self.codes]
 

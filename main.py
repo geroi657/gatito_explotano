@@ -182,7 +182,6 @@ while not finished:
         gun.y += 7
         gun.rotation = 5
 
-
     pygame.display.update()
     clock.tick(consts.FPS)
 
@@ -203,7 +202,7 @@ while not finished:
         elif event.type == pygame.KEYDOWN:
             result = cheats.handle(event.key)
             if result == 1:
-                gun.wallet = 99999999999999999999999999999 # businass
+                gun.wallet = math.inf
                 text_view.on_hit(gun.bullet, gun.wallet)
             elif pygame.key.get_pressed()[pygame.K_1]:
                 print("riffle")
